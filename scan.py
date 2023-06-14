@@ -43,7 +43,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadset()
         self.currentdeviceindex = -1
         self.devicepagesize = (0, 0)
-        self.completelastdir = ''
         completer = QtWidgets.QCompleter(self)
         self.fsModel = QtWidgets.QFileSystemModel(completer)
         self.fsModel.setRootPath(os.path.expanduser("~"))
@@ -161,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updatefeederduplex()
         self.currentdeviceindex = index
         self.devicepagesize = (self.dev.br_x, self.dev.br_y)
-        print(self.devicepagesize)
+
 
     def setScanArea(self, area):
         if self.dev is None:
@@ -198,12 +197,12 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.dev.source = 'Flatbed'
             self.dev.depth = 8
-            self.dev.mode = 'Color' if self.ui.rbColored.isChecked() else 'Gray' #or Color or Gray
+            self.dev.mode = 'Color' if self.ui.rbColored.isChecked() else 'Gray' #Color or Gray
             self.dev.resolution = self.ui.spinBox.value()
             if len(self.pagesize) > 1:
                 self.setScanArea(self.pagesize)
             self.jpegcompression = self.ui.spinBox_2.value()
-            print(self.dev.br_x, self.dev.br_y)
+            #print(self.dev.br_x, self.dev.br_y)
         except Exception as e:
             print(str(e))
             return False
