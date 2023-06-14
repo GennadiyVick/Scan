@@ -39,7 +39,7 @@ Installing the `sane` module on Windows OS is much more complicated and I have n
 ```console
 python -m pip install python-sane
 python -m pip install pyqt5
-python -m pip install python-vlc
+python -m pip install Pillow
 ```
 the program will download and install the module.
 To run this program, you must enter in the console
