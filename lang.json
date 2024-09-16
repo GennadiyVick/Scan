@@ -1,4 +1,5 @@
 {
+"languages": {"default":"English","ru":"Русский"},
 "scanner": {"default":"Scanner:  ","ru":"Сканер:  "},
 "update": {"default":"Update","ru":"Обновить"},
 "scanpdf": {"default":"Scan to PDF","ru":"Сканировать в ПДФ"},
@@ -39,5 +40,8 @@
 "documentnotspec": {"default":"You have selected \"Save to directory\", but no document name is specified!!","ru":"Вы выбрали \"Сохранять в каталог\", но не указано название документа!!"},
 "errorprepare": {"default":"An error occurred while preparing to scan, see the terminal.","ru":"При подготовке к сканированию произошла ошибка, см.в терминале."},
 "openfolder": {"default":"Open folder","ru":"Открыть папку"},
-"scannersearch": {"default":"Scanner search...", "ru": "Поиск сканеров..."}
+"scannersearch": {"default":"Scanner search...", "ru": "Поиск сканеров..."},
+"interfacelang": {"default":"Interface lang:","ru": "Язык интерфейса:"},
+"system": {"default":"System","ru":"Системный"},
+"changinginerfacelang": {"default":"The interface language will change after restarting the program!","ru":"Язык интерфейса изменится после перезапуска программы!"}
 }

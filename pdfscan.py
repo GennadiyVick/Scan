@@ -29,6 +29,7 @@ class PdfScan(QtWidgets.QDialog):
         self.ui.bRotate.clicked.connect(self.rotate)
         self.ui.bCrop.clicked.connect(self.crop)
         self.ui.lw.itemClicked.connect(self.itemClick)
+        self.ui.bDel.clicked.connect(self.delete_page)
         #self.ui.lw.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         self.loadimages()
 
@@ -209,6 +210,17 @@ class PdfScan(QtWidgets.QDialog):
             im.save(tfn)
             item.setIcon(QtGui.QIcon(tfn))
             self.itemClick()
+
+    def delete_page(self):
+        if self.ui.lw.count() < 1 : return
+        i = self.ui.lw.currentRow()
+        if i < 0: return
+        item = self.ui.lw.takeItem(i)
+        try:
+            os.remove(item.text())
+        except:
+            pass
+        
     
     def itemClick(self):
         if self.ui.lw.count() < 1 : return

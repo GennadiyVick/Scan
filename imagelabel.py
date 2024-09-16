@@ -11,11 +11,12 @@ class ImageLabel(QtWidgets.QLabel):
         super().setPixmap(self.scaledPixmap())
 
     def heightForWidth(self, w):
-        return self.height() if self.pix == None else (self.pix.height() * w)/self.pix.width()
+        return self.height() if self.pix is None else round((self.pix.height() * w)/self.pix.width())
 
     def sizeHint(self):
         w = self.width()
-        return QtCore.QSize(w, self.heightForWidth(w))
+        h = self.heightForWidth(w)
+        return QtCore.QSize(w, h)
 
     def scaledPixmap(self):
         return self.pix.scaled(self.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)

@@ -13,16 +13,26 @@ from lang import Lang
 from updatescannerpopup import PopupWidget
 import subprocess
 
-currentversion = '1.2.2'
+
+currentversion = '1.2.4'
+
+changes = [{'version': '1.2.4', 'description': 'Добавлена кнопка удалить страницу в окне сканирования PDF, '
+                                               'прочие мелкие исправления и улучшения.'}, ]
+
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self,qApp):
+    def __init__(self, qApp):
         super(MainWindow, self).__init__()
         self.lang = Lang()
+        lang_keys = list(self.lang.dic['languages'].keys())
+        sets = QtCore.QSettings(os.path.join('RoganovSoft', 'Scan'), "config")
+        i = int(sets.value("Settings/language_index", 0))
+        if i > 0:
+            self.lang.lang = lang_keys[i - 1]
         self.qApp = qApp
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self, self.lang)
-        self.ui.l_author.setText(self.ui.l_author.text()+' v.'+str(currentversion)+'  ')
+        self.ui.l_author.setText(self.ui.l_author.text() + ' v.' + str(currentversion) + '  ')
         self.appdir = os.path.dirname(os.path.realpath(__file__))
         self.ui.bUpdateSource.clicked.connect(self.updatesource)
         self.ui.cbSource.activated.connect(self.devicechange)
@@ -56,7 +66,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def loadset(self):
         sets = QtCore.QSettings(os.path.join('RoganovSoft', 'Scan'), "config")
-        i = int(sets.value("Settings/papersize",0))
+        i = int(sets.value("Settings/papersize", 0))
         self.pagesize = SettingsDialog.sizes[i]
         self.updateonstart = sets.value("Settings/updatedevices_on_start", 'true') == 'true'
         self.lastdir = sets.value('Main/lastdir', str(Path.home()))
@@ -72,14 +82,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.gbAutoSave.setChecked(sets.value('Scan/autosave', 'false') == 'true')
         self.ui.cbFileName.setCurrentText(sets.value('Scan/filename', ''))
         self.ui.eDir.setText(sets.value('Scan/directory', ''))
-        itemscount  = sets.beginReadArray("filenames")
+        itemscount = sets.beginReadArray("filenames")
         for i in range(itemscount):
             sets.setArrayIndex(i)
             fn = sets.value('filename', '')
             if len(fn) > 1:
                 self.ui.cbFileName.addItem(fn)
         sets.endArray()
-
 
     def saveset(self):
         sets = QtCore.QSettings(os.path.join('RoganovSoft', 'Scan'), "config")
@@ -127,13 +136,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.ui.cbDuplex.isEnabled() and self.ui.cbDuplex.isChecked():
             self.ui.cbDuplex.setChecked(False)
 
-
         if self.ui.cbFeeder.isEnabled() and self.ui.cbFeeder.isChecked():
             self.ui.cbPostView.setEnabled(False)
             self.ui.cbPostView.setChecked(False)
         else:
             self.ui.cbPostView.setEnabled(True)
-
 
     def devicechange(self, index):
         if index < 0 or index >= len(self.devices):
@@ -146,7 +153,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dev = sane.open(self.devices[index][0])
         except Exception as e:
             print(str(e))
-            QtWidgets.QMessageBox.information(self,self.lang.tr('error'),self.lang.tr('notopendevice'))
+            QtWidgets.QMessageBox.information(self, self.lang.tr('error'), self.lang.tr('notopendevice'))
             return
         self.duplex_enabled = False
         self.feeder_enabled = False
@@ -160,7 +167,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updatefeederduplex()
         self.currentdeviceindex = index
         self.devicepagesize = (self.dev.br_x, self.dev.br_y)
-
 
     def setScanArea(self, area):
         if self.dev is None:
@@ -197,7 +203,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.dev.source = 'Flatbed'
             self.dev.depth = 8
-            self.dev.mode = 'Color' if self.ui.rbColored.isChecked() else 'Gray' #Color or Gray
+            self.dev.mode = 'Color' if self.ui.rbColored.isChecked() else 'Gray'  #Color or Gray
             self.dev.resolution = self.ui.spinBox.value()
             if len(self.pagesize) > 1:
                 self.setScanArea(self.pagesize)
@@ -220,17 +226,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def scanpdf(self):
         if self.dev == None:
-            QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('devicenotselected'))
+            QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('devicenotselected'))
             return
         if self.ui.gbAutoSave.isChecked():
             if self.ui.eDir.text() == '' or not os.path.isdir(self.ui.eDir.text()):
-                QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('directorynotspec'))
+                QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('directorynotspec'))
                 return
             if len(self.ui.cbFileName.currentText()) < 2:
-                QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('documentnotspec'))
+                QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('documentnotspec'))
                 return
         if not self.preparescan():
-            QtWidgets.QMessageBox.information(self,self.lang.tr('error'),self.lang.tr('errorprepare'))
+            QtWidgets.QMessageBox.information(self, self.lang.tr('error'), self.lang.tr('errorprepare'))
             return
         fn = ''
         if self.ui.gbAutoSave.isChecked():
@@ -238,29 +244,28 @@ class MainWindow(QtWidgets.QMainWindow):
         d = PdfScan(self.lang, self.appdir, self.dev, self.jpegcompression, fn, self)
         i = d.exec()
 
-
     def scan(self):
         if self.dev == None:
-            QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('devicenotselected'))
+            QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('devicenotselected'))
             return
         if self.ui.gbAutoSave.isChecked():
             if self.ui.eDir.text() == '' or not os.path.isdir(self.ui.eDir.text()):
-                QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('directorynotspec'))
+                QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('directorynotspec'))
                 return
             if len(self.ui.cbFileName.currentText()) < 2:
-                QtWidgets.QMessageBox.information(self,self.lang.tr('attension'),self.lang.tr('documentnotspec'))
+                QtWidgets.QMessageBox.information(self, self.lang.tr('attension'), self.lang.tr('documentnotspec'))
                 return
             self.addfilenametolist()
 
         if not self.preparescan():
-            QtWidgets.QMessageBox.information(self,self.lang.tr('error'),self.lang.tr('errorprepare'))
+            QtWidgets.QMessageBox.information(self, self.lang.tr('error'), self.lang.tr('errorprepare'))
             return
         selectedsource = self.dev.source
         if selectedsource == 'Flatbed':
             if self.doStart():
                 img = self.dev.snap()
                 if self.ui.cbPostView.isChecked():
-                    tfn = os.path.join(self.appdir,'temp.png')
+                    tfn = os.path.join(self.appdir, 'temp.png')
                     img.save(tfn)
                     if previewImage(tfn, self.lang, isjpeg=False):
                         img = Image.open(tfn)
@@ -279,7 +284,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     fn = f'{fn}_{i}.jpg'
                 else:
                     #self.lastdir,
-                    fn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lang.tr("saveas"), os.path.join(self.lastdir, "untitled"), ".jpg")
+                    fn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lang.tr("saveas"),
+                                                                    os.path.join(self.lastdir, "untitled"), ".jpg")
                     if len(fn) < 2: return
                     if fn[-len(ext):] != ext:
                         fn += ext
@@ -290,7 +296,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.ui.gbAutoSave.isChecked():
                 fn = os.path.join(self.ui.eDir.text(), self.ui.cbFileName.currentText())
             else:
-                fn, ext = QtWidgets.QFileDialog.getSaveFileName(self.lastdir, self.lang.tr("saveas"), "untitled", ".jpg")
+                fn, ext = QtWidgets.QFileDialog.getSaveFileName(self.lastdir, self.lang.tr("saveas"), "untitled",
+                                                                ".jpg")
                 if len(fn) < 2: return
                 self.lastdir = os.path.dirname(fn)
             if fn[-4:] == '.jpg':
@@ -304,12 +311,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 img.save(f'{fn}_{i}.jpg', quality=self.jpegcompression)
                 i += 1
             if not onescanned:
-                QtWidgets.QMessageBox.information(self,self.lang.tr('error'),self.lang.tr('nodocument'))
+                QtWidgets.QMessageBox.information(self, self.lang.tr('error'), self.lang.tr('nodocument'))
 
     def setautosavedir(self):
         dir = QtWidgets.QFileDialog.getExistingDirectory(self, self.lang.tr('openfolder'), self.lastdir,
-                                             QtWidgets.QFileDialog.ShowDirsOnly
-                                             | QtWidgets.QFileDialog.DontResolveSymlinks)
+                                                         QtWidgets.QFileDialog.ShowDirsOnly
+                                                         | QtWidgets.QFileDialog.DontResolveSymlinks)
         if len(dir) > 2:
             self.ui.eDir.setText(dir)
             self.lastdir = dir
@@ -330,15 +337,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.cbFileName.insertItem(0, fn)
         c = self.ui.cbFileName.count()
         if c > 30:
-            self.ui.cbFileName.removeItem(c-1)
-
+            self.ui.cbFileName.removeItem(c - 1)
 
     def closeEvent(self, event):
-       if self.dev != None:
+        if self.dev != None:
             self.dev.close()
-       sane.exit()
-       self.saveset()
-       super(MainWindow, self).closeEvent(event)
+        sane.exit()
+        self.saveset()
+        super(MainWindow, self).closeEvent(event)
 
     def showsettings(self):
         s = showSettings(self.lang, self)
@@ -346,19 +352,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pagesize = s['size']
 
     def showhelp(self):
-         subprocess.Popen(['firefox',os.path.join(self.appdir,'help.html')])
-
+        subprocess.Popen(['firefox', os.path.join(self.appdir, 'help.html')])
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(':/icon.png'))
     themedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'darktheme')
-    fn = os.path.join(themedir,'theme.qrc')
+    fn = os.path.join(themedir, 'theme.qrc')
     if os.path.isfile(fn):
         with open(fn, 'r') as f:
             theme = f.read()
-        theme = theme.replace('current_directory',themedir)
+        theme = theme.replace('current_directory', themedir)
         app.setStyleSheet(theme)
     window = MainWindow(app)
     window.show()

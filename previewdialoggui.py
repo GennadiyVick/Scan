@@ -67,6 +67,6 @@ class Ui_PreviewDialog(object):
 
     def retranslateUi(self, PreviewDialog, lang):
         PreviewDialog.setWindowTitle(lang.tr("viewcrop"))
-        self.bRestore.setToolTip(lang.tr("restore"))
+        self.bRestore.setToolTip(f'<html><body><p><span style="background: #222;color: #eee;">{lang.tr("restore")}</span></p></body></html>')
         self.bRotate.setText("...")
 import images_rc

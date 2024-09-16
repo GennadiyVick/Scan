@@ -3,11 +3,13 @@ import json
 import os
 
 
-
 class Lang:
-    def __init__(self):
+    def sys_lang(self):
         l,_ = locale.getdefaultlocale()
-        l = l.lower()[0:2]
+        return l.lower()[0:2]
+
+    def __init__(self):
+        l = self.sys_lang()
         #l = 'en'
         self.lang = 'default'
         fn = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lang.json')

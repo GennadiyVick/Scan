@@ -19,7 +19,7 @@ sudo apt-get install python3
 ```
 To install the PyQt5 and Pillow modules in the console enter:
 ```console
-pip3 install pyqt5
+sudo apt-get install python3-pyqt5
 pip3 install Pillow
 ```
 to install sane module:
