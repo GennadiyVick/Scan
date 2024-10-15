@@ -1,7 +1,7 @@
 # Scan. 
 Scan is a program for scanning documents and other images. 
 
-![screenshot](https://github.com/GennadiyVick/Scan/blob/master/image.jpg)
+![screenshot](https://gitlab.com/GennadiyVick/scan/raw/master/image.png)
 ## Required:
 To run the program, you need the `PyQt5`, `Pillow` and `sane` modules installed for `Python` version 3.
 
