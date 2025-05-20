@@ -96,7 +96,7 @@ class PdfScan(QtWidgets.QDialog):
 
     def scan(self):
         selectedsource = self.dev.source
-        if selectedsource == 'Flatbed':
+        if selectedsource == 'Flatbed' or selectedsource == 'Normal':
             if not self.doStart():
                 QtWidgets.QMessageBox.information(self,self.lang.tr('error'),self.lang.tr('nodocument'))
                 return
@@ -148,13 +148,13 @@ class PdfScan(QtWidgets.QDialog):
                 lastdir = self.parent.lastdir
             else:
                 lastdir = str(Path.home())
-            pfn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lang.tr("saveas"), os.path.join(lastdir, "untitled"), ".pdf")
+            pfn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lang.tr("saveas"), os.path.join(lastdir, "untitled"), "PDF (*.pdf)")
             if pfn == None or len(pfn) < 2: return
             lastdir = os.path.dirname(pfn)
             if self.parent != None:
                 self.parent.lastdir = lastdir
-            if pfn[-4:] != ext:
-                pfn += ext
+            if pfn[-4:].lower() != '.pdf':
+                pfn += '.pdf'
 
         images = []
         for i in range(self.ui.lw.count()):

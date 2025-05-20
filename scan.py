@@ -201,7 +201,13 @@ class MainWindow(QtWidgets.QMainWindow):
             elif self.ui.cbFeeder.isChecked():
                 self.dev.source = 'ADF Front'
             else:
-                self.dev.source = 'Flatbed'
+                try:
+                    self.dev.source = 'Flatbed'
+                except:
+                    try:
+                        self.dev.source = 'Normal'
+                    except:
+                        print('can not set device source (ADF Dublex or Norma)')
             self.dev.depth = 8
             self.dev.mode = 'Color' if self.ui.rbColored.isChecked() else 'Gray'  #Color or Gray
             self.dev.resolution = self.ui.spinBox.value()
@@ -261,7 +267,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(self, self.lang.tr('error'), self.lang.tr('errorprepare'))
             return
         selectedsource = self.dev.source
-        if selectedsource == 'Flatbed':
+        if selectedsource == 'Flatbed' or selectedsource == 'Normal':
             if self.doStart():
                 img = self.dev.snap()
                 if self.ui.cbPostView.isChecked():
@@ -285,10 +291,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     #self.lastdir,
                     fn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lang.tr("saveas"),
-                                                                    os.path.join(self.lastdir, "untitled"), ".jpg")
+                                                                    os.path.join(self.lastdir, "untitled"), "JPEG (*.jpg)")
                     if len(fn) < 2: return
-                    if fn[-len(ext):] != ext:
-                        fn += ext
+
+                    if fn[-4:].lower() != ".jpg":
+                        fn += ".jpg"
+                    print(fn)
                     self.lastdir = os.path.dirname(fn)
                 img.save(fn, quality=self.jpegcompression)
         else:
@@ -296,7 +304,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.ui.gbAutoSave.isChecked():
                 fn = os.path.join(self.ui.eDir.text(), self.ui.cbFileName.currentText())
             else:
-                fn, ext = QtWidgets.QFileDialog.getSaveFileName(self.lastdir, self.lang.tr("saveas"), "untitled",
+                fn, ext = QtWidgets.QFileDialog.getSaveFileName(self, self.lastdir, self.lang.tr("saveas"), "untitled",
                                                                 ".jpg")
                 if len(fn) < 2: return
                 self.lastdir = os.path.dirname(fn)
